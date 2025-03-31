@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "AddBlocker",
+  "version": "1.0.0",
+  "description": "A simple add blocker",
+  "icons": {
+    "16": "icons/ad-blocker.png",
+    "48": "icons/ad-blocker.png"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "host_permissions": ["https://developer.chrome.com/*"],
+  "permissions": ["tabGroups", "tabs", "storage"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
