@@ -3,12 +3,7 @@ import { getHostName } from "../../utils/getHostName";
 let activeTabId: number | null = null;
 let activeHostName: string | null = null;
 let startTime: number | null = null;
-export let siteTimes: Record<string, number> = {};
-
-export const resetStats = () => {
-  siteTimes = {};
-  chrome.storage.local.set({ siteTimes });
-};
+let siteTimes: Record<string, number> = {};
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   trackTime();
@@ -38,5 +33,12 @@ export const trackTime = () => {
 
   siteTimes[activeHostName] = (siteTimes[activeHostName] || 0) + Time;
   startTime = Date.now();
+  chrome.storage.local.set({ siteTimes });
+};
+
+export const resetStats = () => {
+  siteTimes = {};
+  startTime = null;
+  updateActiveTab();
   chrome.storage.local.set({ siteTimes });
 };

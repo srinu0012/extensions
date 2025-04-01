@@ -1,10 +1,7 @@
 import { groupTabs } from "./features/tabManager/groupTabs.feature";
 import { restoreSession } from "./features/tabManager/restoreSession";
 import { saveSession } from "./features/tabManager/saveSession";
-import {
-  resetStats,
-  siteTimes,
-} from "./features/productivityTracker/productivityTracker.feature";
+import { resetStats } from "./features/productivityTracker/productivityTracker.feature";
 import {
   saveGlobalNote,
   deleteSingleGlobalNote,
@@ -28,7 +25,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       restoreSession();
       break;
     case "getStats":
-      sendResponse(siteTimes);
+      chrome.storage.local.get("siteTimes", (data) => {
+        sendResponse(data.siteTimes);
+      });
       return true;
     case "resetStats":
       resetStats();

@@ -19,13 +19,18 @@ const ProductivityTracker = () => {
   return (
     <div className="popup-container">
       <h2>Productivity Tracker</h2>
-      <ul>
+      <table>
+        <tr>
+          <th>Domain</th>
+          <th>Time Spent</th>
+        </tr>
         {Object.entries(siteTimes).map(([domain, time]) => (
-          <li key={domain}>
-            {domain}: {(time / 1000).toFixed(1)} seconds
-          </li>
+          <tr key={domain}>
+            <td>{domain}</td>
+            <td>{(time / 1000).toFixed(1)} seconds</td>
+          </tr>
         ))}
-      </ul>
+      </table>
       <button onClick={handleReset}>Reset</button>
     </div>
   );

@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 
 const NoteTakingTool = () => {
   const [url, setUrl] = useState("");
-  const [newLocalNote, setNewLocalNote] = useState("");
-  const [displayLocalNotes, setDisplayLocalNotes] = useState([]);
-  const [globalNotes, setGlobalNotes] = useState<string[]>([]);
+  const [newLocalNote, setNewLocalNote] = useState<string>("");
+  const [displayLocalNotes, setDisplayLocalNotes] = useState<string[]>([]);
+  const [displayGlobalNotes, setDisplayGlobalNotes] = useState<string[]>([]);
   const [newGlobalNote, setNewGlobalNote] = useState("");
 
   const getLocalNotes = () => {
@@ -18,7 +18,7 @@ const NoteTakingTool = () => {
 
   const getGlobalNotes = () => {
     chrome.storage.local.get("globalNotes", (data) => {
-      setGlobalNotes(data.globalNotes);
+      setDisplayGlobalNotes(data.globalNotes);
     });
   };
 
@@ -33,7 +33,7 @@ const NoteTakingTool = () => {
       url,
       note: newLocalNote,
     });
-    getLocalNotes();
+    setDisplayLocalNotes((state) => [...state, newLocalNote]);
     setNewLocalNote("");
   };
 
@@ -63,8 +63,9 @@ const NoteTakingTool = () => {
       action: "saveGlobalNote",
       note: newGlobalNote,
     });
+
     setNewGlobalNote("");
-    setGlobalNotes((state) => [...state, newGlobalNote]);
+    setDisplayGlobalNotes((state) => [...state, newGlobalNote]);
   };
 
   const handleGlobalDelete = (index: number) => {
@@ -72,7 +73,10 @@ const NoteTakingTool = () => {
       action: "deleteSingleGlobalNote",
       index,
     });
-    setGlobalNotes((state) => state.filter((_note, ind) => ind != index));
+
+    setDisplayGlobalNotes((state) =>
+      state.filter((_note, ind) => ind != index)
+    );
   };
 
   return (
@@ -84,8 +88,10 @@ const NoteTakingTool = () => {
         value={newLocalNote}
         onChange={(e) => setNewLocalNote(e.target.value)}
       />
+
       <button onClick={handleLocalSave}>Save</button>
       <button onClick={handleLocalDeleteAll}>DeleteAll</button>
+
       <ul>
         {displayLocalNotes?.map((note, index) => (
           <li key={index}>
@@ -108,7 +114,7 @@ const NoteTakingTool = () => {
       <button onClick={handleGlobalNoteAdd}>Add</button>
 
       <ul>
-        {globalNotes?.map((note, index) => (
+        {displayGlobalNotes?.map((note, index) => (
           <li key={index}>
             {note}
             <button
