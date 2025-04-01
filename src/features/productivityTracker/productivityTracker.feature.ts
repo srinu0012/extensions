@@ -1,26 +1,26 @@
 import { getHostName } from "../../utils/getHostName";
 
-let activeTabId: number | null = null;
 let activeHostName: string | null = null;
 let startTime: number | null = null;
 let siteTimes: Record<string, number> = {};
 
-chrome.tabs.onActivated.addListener(({ tabId }) => {
+chrome.storage.local.get("siteTimes", (data) => {
+  if (!data.siteTimes) return;
+  siteTimes = data.siteTimes;
+});
+
+chrome.tabs.onActivated.addListener(() => {
   trackTime();
-  activeTabId = tabId;
   updateActiveTab();
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (tabId === activeTabId && changeInfo.url) {
-    trackTime();
-    updateActiveTab();
-  }
+chrome.tabs.onUpdated.addListener(() => {
+  trackTime();
+  updateActiveTab();
 });
 
 export const updateActiveTab = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    activeTabId = tabs[0].id!;
     activeHostName = getHostName(tabs[0].url);
     startTime = Date.now();
   });
@@ -29,16 +29,12 @@ export const updateActiveTab = () => {
 export const trackTime = () => {
   if (!activeHostName || !startTime) return;
   const Time = Date.now() - startTime;
-  console.log(Time);
-
   siteTimes[activeHostName] = (siteTimes[activeHostName] || 0) + Time;
-  startTime = Date.now();
   chrome.storage.local.set({ siteTimes });
 };
 
 export const resetStats = () => {
   siteTimes = {};
   startTime = null;
-  updateActiveTab();
   chrome.storage.local.set({ siteTimes });
 };
