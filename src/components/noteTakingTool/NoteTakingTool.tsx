@@ -87,11 +87,16 @@ const NoteTakingTool = () => {
       <button onClick={handleLocalSave}>Save</button>
       <button onClick={handleLocalDeleteAll}>DeleteAll</button>
       <ul>
-        {displayLocalNotes?.map((note, ind) => (
-          <div key={ind}>
-            <li key={ind}>{note}</li>
-            <button onClick={() => handleLocalDeleteSingleNote(ind)}>X</button>
-          </div>
+        {displayLocalNotes?.map((note, index) => (
+          <li key={index}>
+            {note}
+            <button
+              className="delete-btn"
+              onClick={() => handleLocalDeleteSingleNote(index)}
+            >
+              X
+            </button>
+          </li>
         ))}
       </ul>
 
@@ -106,7 +111,12 @@ const NoteTakingTool = () => {
         {globalNotes?.map((note, index) => (
           <li key={index}>
             {note}
-            <button onClick={() => handleGlobalDelete(index)}>X</button>
+            <button
+              className="delete-btn"
+              onClick={() => handleGlobalDelete(index)}
+            >
+              X
+            </button>
           </li>
         ))}
       </ul>

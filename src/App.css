@@ -18,6 +18,9 @@
     cursor: pointer;
     border-radius: 5px;
   }
+  .delete-btn{
+    width: 40%;
+  }
   
   button:hover {
     background: #0056b3;
