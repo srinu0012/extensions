@@ -8,7 +8,7 @@ const NoteTakingTool = () => {
   const [newGlobalNote, setNewGlobalNote] = useState("");
 
   const getLocalNotes = () => {
-    chrome.runtime.sendMessage({ action: "getPageUrl" }, (response) => {
+    chrome.runtime.sendMessage({ action: "getPageHostName" }, (response) => {
       setUrl(response);
       chrome.storage.local.get("localNotes", (data) => {
         setDisplayLocalNotes(data.localNotes[response]);
@@ -49,7 +49,12 @@ const NoteTakingTool = () => {
       url,
       index,
     });
-    getLocalNotes();
+
+    setDisplayLocalNotes((state) =>
+      state.filter((_note, ind) => {
+        return ind != index;
+      })
+    );
   };
 
   const handleGlobalNoteAdd = async () => {
@@ -59,19 +64,15 @@ const NoteTakingTool = () => {
       note: newGlobalNote,
     });
     setNewGlobalNote("");
-    getGlobalNotes();
+    setGlobalNotes((state) => [...state, newGlobalNote]);
   };
 
-  const handleGlobalDelete = async (index: number) => {
-    await chrome.runtime.sendMessage(
-      {
-        action: "deleteSingleGlobalNote",
-        index,
-      },
-      () => {
-        getGlobalNotes();
-      }
-    );
+  const handleGlobalDelete = (index: number) => {
+    chrome.runtime.sendMessage({
+      action: "deleteSingleGlobalNote",
+      index,
+    });
+    setGlobalNotes((state) => state.filter((_note, ind) => ind != index));
   };
 
   return (
@@ -104,7 +105,8 @@ const NoteTakingTool = () => {
       <ul>
         {globalNotes?.map((note, index) => (
           <li key={index}>
-            {note} <button onClick={() => handleGlobalDelete(index)}>X</button>
+            {note}
+            <button onClick={() => handleGlobalDelete(index)}>X</button>
           </li>
         ))}
       </ul>

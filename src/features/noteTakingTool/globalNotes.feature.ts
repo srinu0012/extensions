@@ -6,12 +6,6 @@ export const saveGlobalNote = (note: string) => {
   });
 };
 
-export const getGlobalNotes = (callback: (notes: string[]) => void) => {
-  chrome.storage.local.get(["globalNotes"], (data) => {
-    callback(data.globalNotes || []);
-  });
-};
-
 export const deleteSingleGlobalNote = (index: number) => {
   chrome.storage.local.get("globalNotes", (data) => {
     const filterNotes = data.globalNotes?.filter(
