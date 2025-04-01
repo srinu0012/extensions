@@ -17,7 +17,7 @@ const ProductivityTracker = () => {
   }, []);
 
   return (
-    <div>
+    <div className="popup-container">
       <h2>Productivity Tracker</h2>
       <ul>
         {Object.entries(siteTimes).map(([domain, time]) => (

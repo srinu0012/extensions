@@ -76,7 +76,7 @@ const NoteTakingTool = () => {
   };
 
   return (
-    <div className="popupContainer">
+    <div className="popup-container">
       <h2>Smart Notes</h2>
 
       <h3>Local Note (For this page)</h3>

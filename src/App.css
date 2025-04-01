@@ -3,6 +3,9 @@
     padding: 10px;
     text-align: center;
     font-family: Arial, sans-serif;
+    border: 2px solid rgb(30, 27, 27);
+    margin-bottom: 5px;
+    background-color: antiquewhite;
   }
   
   button {

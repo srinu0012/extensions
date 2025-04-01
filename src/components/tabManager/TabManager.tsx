@@ -1,7 +1,4 @@
-import React from "react";
-import "./TabManger.css";
-
-const TabManager: React.FC = () => {
+const TabManager = () => {
   const handleAction = (action: string) => {
     chrome.runtime.sendMessage({ action });
   };
