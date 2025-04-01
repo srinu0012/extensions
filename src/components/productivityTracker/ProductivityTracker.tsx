@@ -4,10 +4,8 @@ const ProductivityTracker = () => {
   const [siteTimes, setSiteTimes] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    chrome.runtime.sendMessage({ action: "getStats" }, (response) => {
-      if (response) {
-        setSiteTimes(response);
-      }
+    chrome.storage.local.get("siteTimes", (data) => {
+      setSiteTimes(data.siteTimes);
     });
   }, []);
 

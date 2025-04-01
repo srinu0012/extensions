@@ -8,10 +8,10 @@ const NoteTakingTool = () => {
   const [newGlobalNote, setNewGlobalNote] = useState("");
 
   const getLocalNotes = () => {
-    chrome.runtime.sendMessage({ action: "getPageHostName" }, (response) => {
-      setUrl(response);
+    chrome.runtime.sendMessage({ action: "getPageHostName" }, (hostName) => {
+      setUrl(hostName);
       chrome.storage.local.get("localNotes", (data) => {
-        setDisplayLocalNotes(data.localNotes[response]);
+        setDisplayLocalNotes(data.localNotes[hostName]);
       });
     });
   };
@@ -28,6 +28,7 @@ const NoteTakingTool = () => {
   }, []);
 
   const handleLocalSave = async () => {
+    if (!newLocalNote.trim()) return;
     await chrome.runtime.sendMessage({
       action: "saveLocalNote",
       url,

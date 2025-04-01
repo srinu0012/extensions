@@ -24,11 +24,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     case "restoreSession":
       restoreSession();
       break;
-    case "getStats":
-      chrome.storage.local.get("siteTimes", (data) => {
-        sendResponse(data.siteTimes);
-      });
-      return true;
     case "resetStats":
       resetStats();
       break;
