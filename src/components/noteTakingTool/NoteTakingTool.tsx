@@ -2,49 +2,76 @@ import { useState, useEffect } from "react";
 
 const NoteTakingTool = () => {
   const [url, setUrl] = useState("");
-  const [localNote, setLocalNote] = useState("");
-  const [localNotes, setLocalNotes] = useState({});
+  const [newLocalNote, setNewLocalNote] = useState("");
+  const [displayLocalNotes, setDisplayLocalNotes] = useState([]);
   const [globalNotes, setGlobalNotes] = useState<string[]>([]);
   const [newGlobalNote, setNewGlobalNote] = useState("");
 
-  console.log(localNote, "<<<<<<local note from react notetakingtool");
-
-  useEffect(() => {
+  const getLocalNotes = () => {
     chrome.runtime.sendMessage({ action: "getPageUrl" }, (response) => {
       setUrl(response);
-      chrome.storage.local.get("localNotes", (data) => {});
+      chrome.storage.local.get("localNotes", (data) => {
+        setDisplayLocalNotes(data.localNotes[response]);
+      });
     });
+  };
 
-    chrome.runtime.sendMessage({ action: "getGlobalNotes" }, setGlobalNotes);
+  const getGlobalNotes = () => {
+    chrome.storage.local.get("globalNotes", (data) => {
+      setGlobalNotes(data.globalNotes);
+    });
+  };
+
+  useEffect(() => {
+    getLocalNotes();
+    getGlobalNotes();
   }, []);
 
-  const handleLocalSave = () => {
-    chrome.runtime.sendMessage({
+  const handleLocalSave = async () => {
+    await chrome.runtime.sendMessage({
       action: "saveLocalNote",
       url,
-      note: localNote,
+      note: newLocalNote,
     });
-    console.log(url, "<<<<<form react note taking tool");
-    setLocalNote("");
+    getLocalNotes();
+    setNewLocalNote("");
   };
 
-  const handleLocalDelete = () => {
-    chrome.runtime.sendMessage({ action: "deleteLocalNote", url });
-    setLocalNote("");
+  const handleLocalDeleteAll = async () => {
+    await chrome.runtime.sendMessage({ action: "deleteLocalNote", url });
+    setNewLocalNote("");
+    setDisplayLocalNotes([]);
   };
 
-  const handleGlobalSave = () => {
+  const handleLocalDeleteSingleNote = async (index: number) => {
+    await chrome.runtime.sendMessage({
+      action: "deleteSingleLocalNote",
+      url,
+      index,
+    });
+    getLocalNotes();
+  };
+
+  const handleGlobalNoteAdd = async () => {
     if (!newGlobalNote.trim()) return;
-    chrome.runtime.sendMessage({
+    await chrome.runtime.sendMessage({
       action: "saveGlobalNote",
       note: newGlobalNote,
     });
     setNewGlobalNote("");
+    getGlobalNotes();
   };
 
-  const handleGlobalDelete = (index: number) => {
-    chrome.runtime.sendMessage({ action: "deleteGlobalNote", index });
-    setGlobalNotes((prev) => prev.filter((_, i) => i !== index));
+  const handleGlobalDelete = async (index: number) => {
+    await chrome.runtime.sendMessage(
+      {
+        action: "deleteSingleGlobalNote",
+        index,
+      },
+      () => {
+        getGlobalNotes();
+      }
+    );
   };
 
   return (
@@ -53,23 +80,31 @@ const NoteTakingTool = () => {
 
       <h3>Local Note (For this page)</h3>
       <textarea
-        value={localNote}
-        onChange={(e) => setLocalNote(e.target.value)}
+        value={newLocalNote}
+        onChange={(e) => setNewLocalNote(e.target.value)}
       />
       <button onClick={handleLocalSave}>Save</button>
-      <button onClick={handleLocalDelete}>Delete</button>
+      <button onClick={handleLocalDeleteAll}>DeleteAll</button>
+      <ul>
+        {displayLocalNotes?.map((note, ind) => (
+          <div key={ind}>
+            <li key={ind}>{note}</li>
+            <button onClick={() => handleLocalDeleteSingleNote(ind)}>X</button>
+          </div>
+        ))}
+      </ul>
 
-      <h3>Global Notes (Accessible Anywhere)</h3>
+      <h3>Global Notes</h3>
       <textarea
         value={newGlobalNote}
         onChange={(e) => setNewGlobalNote(e.target.value)}
       />
-      <button onClick={handleGlobalSave}>Add</button>
+      <button onClick={handleGlobalNoteAdd}>Add</button>
 
       <ul>
-        {globalNotes.map((note, index) => (
+        {globalNotes?.map((note, index) => (
           <li key={index}>
-            {note} <button onClick={() => handleGlobalDelete(index)}>❌</button>
+            {note} <button onClick={() => handleGlobalDelete(index)}>X</button>
           </li>
         ))}
       </ul>

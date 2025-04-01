@@ -12,10 +12,14 @@ export const getGlobalNotes = (callback: (notes: string[]) => void) => {
   });
 };
 
-export const deleteGlobalNote = (index: number) => {
-  chrome.storage.local.get(["globalNotes"], (data) => {
-    const globalNotes = data.globalNotes || [];
-    globalNotes.splice(index, 1);
-    chrome.storage.local.set({ globalNotes });
+export const deleteSingleGlobalNote = (index: number) => {
+  chrome.storage.local.get("globalNotes", (data) => {
+    const filterNotes = data.globalNotes?.filter(
+      (_note: string, i: number) => i != index
+    );
+
+    chrome.storage.local.set({
+      globalNotes: filterNotes,
+    });
   });
 };

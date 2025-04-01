@@ -8,12 +8,13 @@ import {
 import {
   saveGlobalNote,
   getGlobalNotes,
-  deleteGlobalNote,
+  deleteSingleGlobalNote,
 } from "./features/noteTakingTool/globalNotes.feature";
 import {
   saveLocalNote,
   getLocalNote,
   deleteLocalNote,
+  deleteSingleLocalNote,
 } from "./features/noteTakingTool/localNotes.feature";
 import { getHostName } from "./utils/getHostName";
 
@@ -29,35 +30,35 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === "getPageUrl") {
     chrome.tabs.query({ active: true }, (tabs) => {
       const hostName = getHostName(tabs[0].url);
-      console.log(hostName, "<<<,hodtname background");
       sendResponse(hostName);
     });
     return true;
   }
+  if (message.action === "saveLocalNote") {
+    saveLocalNote(message.url, message.note);
+  }
+  if (message.action === "deleteLocalNote") {
+    deleteLocalNote(message.url);
+  }
   if (message.action === "getLocalNote") {
     const localNotes = getLocalNote(message.url);
-    console.log(localNotes, "<<<<local notes sending background");
     sendResponse(localNotes);
     return true;
+  }
+  if (message.action == "deleteSingleLocalNote") {
+    deleteSingleLocalNote(message.url, message.index);
+  }
+  if (message.action == "deleteSingleGlobalNote") {
+    deleteSingleGlobalNote(message.index);
   }
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.action === "saveLocalNote") {
-    saveLocalNote(message.url, message.note);
-  }
-
-  if (message.action === "deleteLocalNote") {
-    deleteLocalNote(message.url);
-  }
   if (message.action === "saveGlobalNote") {
     saveGlobalNote(message.note);
   }
   if (message.action === "getGlobalNotes") {
     getGlobalNotes(sendResponse);
     return true;
-  }
-  if (message.action === "deleteGlobalNote") {
-    deleteGlobalNote(message.index);
   }
 });
