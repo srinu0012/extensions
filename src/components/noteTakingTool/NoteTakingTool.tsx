@@ -39,7 +39,7 @@ const NoteTakingTool = () => {
   };
 
   const handleLocalDeleteAll = async () => {
-    await chrome.runtime.sendMessage({ action: "deleteLocalNote", url });
+    await chrome.runtime.sendMessage({ action: "deleteAllLocalNote", url });
     setNewLocalNote("");
     setDisplayLocalNotes([]);
   };

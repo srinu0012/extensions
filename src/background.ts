@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     case "saveLocalNote":
       saveLocalNote(message.url, message.note);
       break;
-    case "deleteLocalNote":
+    case "deleteAllLocalNote":
       deleteLocalNote(message.url);
       break;
     case "deleteSingleLocalNote":
